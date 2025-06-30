@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from .model import router as model_router
+
+app = FastAPI(
+    root_path='/api',
+)
+app.include_router(model_router)
+
 
 @app.get("/")
 def read_root():
