@@ -2,11 +2,27 @@ from typing import Tuple
 
 from ollama import AsyncClient, ChatResponse
 
+from .logger import model_logger
 from .schemas import RequestChatMessage
 
 client = AsyncClient()
 
 test_memory = {}
+
+
+async def pull_model() -> None:
+    """
+    Pull the Qwen 3 model from Ollama.
+    """
+    models = await client.list()
+    if "qwen3:8b" not in models:
+        model_logger.info("Pulling Qwen 3 model...")
+        await client.pull("qwen3:8b")
+        model_logger.info("Qwen 3 model pulled successfully.")
+    if "gemma3:4b" not in models:
+        model_logger.info("Pulling Gemma 3 model...")
+        await client.pull("gemma3:4b")
+        model_logger.info("Gemma 3 model pulled successfully.")
 
 
 def post_process_response(model: str, response: ChatResponse) -> Tuple[str, str]:
