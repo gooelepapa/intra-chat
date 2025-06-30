@@ -5,15 +5,9 @@
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-## How to install ollama
+## How to install ollama and postgresql
 ```bash
-curl -fsSL https://ollama.ai/install.sh | sh
-```
-
-# ollama
-> To run ollame service, you need to open another terminal and rub following command:
-```bash
-ollama serve
+sudo docker compose up -d
 ```
 
 # Uv chinese doc
