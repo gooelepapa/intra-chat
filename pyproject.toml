@@ -9,7 +9,9 @@ dependencies = [
     "coloredlogs>=15.0.1",
     "fastapi>=0.115.14",
     "ollama>=0.5.1",
+    "passlib[bcrypt]>=1.7.4",
     "psycopg2-binary>=2.9.10",
+    "python-jose[cryptography]>=3.5.0",
     "sqlalchemy[asyncio]>=2.0.41",
     "uvicorn>=0.34.3",
 ]
