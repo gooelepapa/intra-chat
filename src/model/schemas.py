@@ -12,4 +12,3 @@ class ResponseChatMessage(BaseModel):
     code: int
     thinking: Optional[str] = None
     content: str
-    content: str
