@@ -40,7 +40,7 @@ async def warmup_model() -> None:
         model_logger.error(f"Error warming up {MODEL} model: {e}")
 
 
-def post_process_response(model: str, response: ChatResponse) -> Tuple[str, str]:
+def post_process_response(response: ChatResponse) -> Tuple[str, str]:
     raw_content = response.message.content
     content = None
     thinking_content = None
@@ -80,4 +80,4 @@ async def ask_llm(request: RequestChatMessage) -> str:
         }
     )
     # Return the model's response content
-    return post_process_response(MODEL, response)
+    return post_process_response(response)
