@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from ..auth.dependencies import get_current_user
 from .llm import ask_llm
 from .schemas import RequestChatMessage, ResponseChatMessage
 
@@ -8,6 +9,7 @@ VERSION = 'v1'
 router = APIRouter(
     prefix=f'/chat/{VERSION}',
     tags=['chat'],
+    dependencies=[Depends(get_current_user)],
 )
 
 
