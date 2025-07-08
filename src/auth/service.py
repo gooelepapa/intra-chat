@@ -5,14 +5,14 @@ from jose import JWTError, jwt
 from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..config import configuration
 from ..db.models import User
 from .schemas import RequestCreateUser, TokenData
 from .utils import get_hashed_password, verify_password
 
-# TODO: Need to create another config file for these information
-SECRET_KEY = "your_secret_key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = configuration.SECRET_KEY
+ALGORITHM = configuration.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = configuration.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 async def create_access_token(

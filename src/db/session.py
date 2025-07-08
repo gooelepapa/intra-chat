@@ -2,8 +2,9 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-# TODO: Need to create another config file for these information
-DATABASE_URL = "postgresql+asyncpg://chatuser:chatpass@localhost:5432/intra_chat"
+from ..config import configuration
+
+DATABASE_URL = configuration.DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,

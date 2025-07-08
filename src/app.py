@@ -6,7 +6,7 @@ from .auth import router as auth_router
 from .db.models import Base
 from .db.session import engine
 from .model import router as model_router
-from .model.llm import pull_model
+from .model.llm import pull_model, warmup_model
 
 
 @asynccontextmanager
@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
 
     # Pull the models when the application starts
     await pull_model()
+    await warmup_model()
     async with engine.begin() as conn:
         # Ensure the database is created
         await conn.run_sync(Base.metadata.create_all)
