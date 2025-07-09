@@ -4,7 +4,8 @@ from pydantic import BaseModel
 
 
 class RequestChatMessage(BaseModel):
-    user_id: str
+    user_id: int
+    chat_session_id: Optional[str] = None
     content: str
 
 

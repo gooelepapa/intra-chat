@@ -1,10 +1,14 @@
 from typing import Tuple
 
+from fastapi import HTTPException, status
 from ollama import AsyncClient, ChatResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..auth.service import get_user_by_id
 from ..config import configuration
 from .logger import model_logger
 from .schemas import RequestChatMessage
+from .utils import create_chat_session, get_chat_session_by_user, update_chat_session
 
 client = AsyncClient()
 
@@ -53,31 +57,56 @@ def post_process_response(response: ChatResponse) -> Tuple[str, str]:
     return content, thinking_content
 
 
-async def ask_llm(request: RequestChatMessage) -> str:
-    # Get the user ID from the request
+async def ask_llm(
+    session: AsyncSession,
+    request: RequestChatMessage,
+) -> str:
     user_id = request.user_id
     user_content = request.content
-    # If the user ID is not in the test memory, initialize it
-    if user_id not in test_memory:
-        test_memory[user_id] = []
-    history_messages = test_memory[user_id]
+    chat_session_id = request.chat_session_id
+    # Check user existence
+    user = await get_user_by_id(session=session, user_id=user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with ID {user_id} not found.",
+        )
+
+    # Get the chat memory for the user
+    chat_session = await get_chat_session_by_user(
+        session=session,
+        user_id=user_id,
+        chat_session_id=chat_session_id,
+    )
+
+    # If chat session does not exist, create a new one
+    if not chat_session:
+        chat_session = await create_chat_session(
+            session=session,
+            user_id=user_id,
+        )
     # Call the llm model with the user's message
-    response = await client.chat(
+    history_messages = chat_session.messages
+    llm_response = await client.chat(
         model=MODEL,
         messages=[*history_messages, {'role': 'user', 'content': user_content}],
     )
-    # Append the model's response to the memory
-    test_memory[user_id].append(
+    # Append the model's response to the chat session
+    new_message = [
         {
             'role': 'user',
             'content': user_content,
-        }
-    )
-    test_memory[user_id].append(
+        },
         {
             'role': 'assistant',
-            'content': response["message"]["content"],
-        }
+            'content': llm_response.message.content,
+        },
+    ]
+    await update_chat_session(
+        session=session,
+        chat_session=chat_session,
+        new_messages=new_message,
     )
     # Return the model's response content
-    return post_process_response(response)
+    content, thinking_content = post_process_response(llm_response)
+    return content, thinking_content

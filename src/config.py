@@ -15,6 +15,7 @@ class Configuration(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     # Ollama arguments
     MODEL: str
+    MEMORY_SIZE: int = 100  # Default memory size for chat sessions
 
     model_config = SettingsConfigDict(env_file=".env")
 
