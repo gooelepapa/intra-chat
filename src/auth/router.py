@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -31,7 +31,7 @@ router = APIRouter(
     response_model=MessageResponse,
 )
 async def user_register(
-    user_data: Annotated[RequestCreateUser, Body()],
+    user_data: Annotated[RequestCreateUser, Depends()],
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     db_user = await get_user_by_account(session, user_data.account)
