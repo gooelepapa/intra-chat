@@ -3,10 +3,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from .auth import router as auth_router
+from .core_llm import router as llm_router
+from .core_llm.llm import pull_model, warmup_model
 from .db.models import Base
 from .db.session import engine
-from .model import router as model_router
-from .model.llm import pull_model, warmup_model
 
 
 @asynccontextmanager
@@ -31,7 +31,7 @@ app = FastAPI(
     root_path='/api',
     lifespan=lifespan,
 )
-app.include_router(model_router)
+app.include_router(llm_router)
 app.include_router(auth_router)
 
 
