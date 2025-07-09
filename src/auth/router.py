@@ -53,7 +53,7 @@ async def user_register(
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session: Annotated[AsyncSession, Depends(get_db_session)],
-):
+) -> Token:
     try:
         user = await auth_user(session=session, account=form_data.username, password=form_data.password)
         access_token = await create_access_token(
@@ -81,5 +81,5 @@ async def login(
 )
 async def get_users(
     token: str = Depends(oauth2_scheme),
-):
+) -> TokenData:
     return await decode_access_token(token=token)

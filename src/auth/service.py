@@ -1,4 +1,5 @@
 from datetime import UTC, datetime, timedelta
+from typing import Optional
 
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
@@ -31,7 +32,7 @@ async def create_access_token(
 
 async def decode_access_token(
     token: str,
-) -> TokenData | None:
+) -> Optional[TokenData]:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("id")
@@ -83,7 +84,7 @@ async def create_user(
 async def get_user_by_account(
     session: AsyncSession,
     account: str,
-) -> User | None:
+) -> Optional[User]:
     query = select(
         User.id,
         User.name,
@@ -91,6 +92,22 @@ async def get_user_by_account(
         User.email,
         User.password,
     ).where(User.account == account)
+    result = await session.execute(query)
+    user_data = result.mappings().first()
+    return User(**user_data) if user_data else None
+
+
+async def get_user_by_id(
+    session: AsyncSession,
+    user_id: int,
+) -> User | None:
+    query = select(
+        User.id,
+        User.name,
+        User.account,
+        User.email,
+        User.password,
+    ).where(User.id == user_id)
     result = await session.execute(query)
     user_data = result.mappings().first()
     return User(**user_data) if user_data else None
