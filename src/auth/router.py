@@ -31,7 +31,7 @@ router = APIRouter(
     response_model=MessageResponse,
 )
 async def user_register(
-    user_data: Annotated[RequestCreateUser, Depends()],
+    user_data: RequestCreateUser,
     session: Annotated[AsyncSession, Depends(get_db_session)],
 ):
     db_user = await get_user_by_account(session, user_data.account)
