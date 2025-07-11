@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from .auth import router as auth_router
 from .core_llm import router as llm_router
-from .core_llm.llm import pull_model, warmup_model
+from .core_llm.llm_service import pull_model, warmup_model
 from .db.models import Base
 from .db.session import engine
 

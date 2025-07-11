@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..auth.dependencies import get_current_user
 from ..auth.schemas import TokenData
 from ..db.session import get_db_session
-from .llm import ask_llm
+from .llm_service import ask_llm
 from .schemas import RequestChatMessage, ResponseChatMessage
 
 VERSION = 'v1'
