@@ -26,12 +26,14 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     id: int
+    name: str
     account: str
 
     model_config = {
         "json_schema_extra": {
             "example": {
                 "id": 1,
+                "name": "John Doe",
                 "account": "johndoe",
             },
         },

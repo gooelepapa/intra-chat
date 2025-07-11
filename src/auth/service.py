@@ -36,6 +36,7 @@ async def decode_access_token(
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id: int = payload.get("id")
+        name: str = payload.get("name")
         account: str = payload.get("account")
         if user_id is None or account is None:
             raise HTTPException(
@@ -43,7 +44,7 @@ async def decode_access_token(
                 detail="Invalid authentication credentials",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-        return TokenData(id=user_id, account=account)
+        return TokenData(id=user_id, name=name, account=account)
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
