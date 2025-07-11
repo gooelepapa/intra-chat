@@ -44,34 +44,24 @@ async def split_content_form_ollama(
     return content, thinking_content
 
 
-async def get_chat_session_by_user(
+async def get_chat_session_by_session_id(
     session: AsyncSession,
     user_id: int,
-    chat_session_id: Optional[str] = None,
+    chat_session_id: str,
 ) -> Optional[ChatSession]:
-    if chat_session_id:
+    try:
         query = select(
             ChatSession,
         ).where(
             ChatSession.user_id == user_id,
             ChatSession.session_id == chat_session_id,
         )
-    else:
-        query = (
-            select(
-                ChatSession,
-            )
-            .where(
-                ChatSession.user_id == user_id,
-            )
-            .order_by(
-                ChatSession.created_at.desc(),
-            )
-            .limit(1)
-        )
-    result = await session.execute(query)
-    chat_session = result.scalars().first()
-    return chat_session
+        result = await session.execute(query)
+        chat_session = result.scalars().first()
+        return chat_session
+    except Exception as e:
+        await session.rollback()
+        raise e
 
 
 async def update_chat_session(

@@ -28,7 +28,7 @@ async def ask_chat(
     db_session: Annotated[AsyncSession, Depends(get_db_session)],
 ) -> ResponseChatMessage:
     try:
-        answer, thinking_content = await ask_llm(
+        answer, thinking_content, chat_session_id = await ask_llm(
             session=db_session,
             request=request,
             current_user=current_user,
@@ -37,9 +37,7 @@ async def ask_chat(
             code=200,
             content=answer,
             thinking=thinking_content,
+            chat_session_id=chat_session_id,
         )
     except Exception as e:
-        return ResponseChatMessage(
-            code=500,
-            content=f'Error: {str(e)}',
-        )
+        raise e
