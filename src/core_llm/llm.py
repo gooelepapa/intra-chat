@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from ollama import AsyncClient, ChatResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..auth.schemas import TokenData
 from ..auth.service import get_user_by_id
 from ..config import configuration
 from .logger import model_logger
@@ -60,8 +61,9 @@ def post_process_response(response: ChatResponse) -> Tuple[str, str]:
 async def ask_llm(
     session: AsyncSession,
     request: RequestChatMessage,
+    current_user: TokenData,
 ) -> str:
-    user_id = request.user_id
+    user_id = current_user.id
     user_content = request.content
     chat_session_id = request.chat_session_id
     # Check user existence

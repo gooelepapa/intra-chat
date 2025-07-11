@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..auth.dependencies import get_current_user
+from ..auth.schemas import TokenData
 from ..db.session import get_db_session
 from .llm import ask_llm
 from .schemas import RequestChatMessage, ResponseChatMessage
@@ -22,12 +23,16 @@ router = APIRouter(
     response_model=ResponseChatMessage,
 )
 async def ask_chat(
-    request: Annotated[RequestChatMessage, Depends()],
-    session: Annotated[AsyncSession, Depends(get_db_session)],
+    current_user: Annotated[TokenData, Depends(get_current_user)],
+    request: RequestChatMessage,
+    db_session: Annotated[AsyncSession, Depends(get_db_session)],
 ) -> ResponseChatMessage:
-
     try:
-        answer, thinking_content = await ask_llm(session=session, request=request)
+        answer, thinking_content = await ask_llm(
+            session=db_session,
+            request=request,
+            current_user=current_user,
+        )
         return ResponseChatMessage(
             code=200,
             content=answer,
