@@ -1,7 +1,5 @@
-from typing import Tuple
-
 from fastapi import HTTPException, status
-from ollama import AsyncClient, ChatResponse
+from ollama import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..auth.schemas import TokenData
@@ -9,7 +7,12 @@ from ..auth.service import get_user_by_id
 from ..config import configuration
 from .logger import model_logger
 from .schemas import RequestChatMessage
-from .utils import create_chat_session, get_chat_session_by_user, update_chat_session
+from .utils import (
+    create_chat_session,
+    get_chat_session_by_user,
+    split_content_form_ollama,
+    update_chat_session,
+)
 
 client = AsyncClient()
 
@@ -43,19 +46,6 @@ async def warmup_model() -> None:
         model_logger.info(f"{MODEL} model warmed up successfully.")
     except Exception as e:
         model_logger.error(f"Error warming up {MODEL} model: {e}")
-
-
-def post_process_response(response: ChatResponse) -> Tuple[str, str]:
-    raw_content = response.message.content
-    content = None
-    thinking_content = None
-    if '<think>' in raw_content and '</think>' in raw_content:
-        # Extract thinking content if available
-        thinking_content, content = raw_content.split("<think>\n")[-1].split("\n</think>\n\n")
-    else:
-        thinking_content = None
-        content = raw_content
-    return content, thinking_content
 
 
 async def ask_llm(
@@ -110,5 +100,6 @@ async def ask_llm(
         new_messages=new_message,
     )
     # Return the model's response content
-    content, thinking_content = post_process_response(llm_response)
+    content, thinking_content = await split_content_form_ollama(llm_response)
+
     return content, thinking_content

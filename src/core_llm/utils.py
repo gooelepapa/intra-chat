@@ -1,6 +1,9 @@
+import asyncio
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
+from ollama import ChatResponse
 from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -8,6 +11,37 @@ from ..config import configuration
 from ..db.models import ChatSession
 
 MEMORY_SIZE = configuration.MEMORY_SIZE  # Default memory size from configuration
+
+
+def __split_content(
+    response: ChatResponse,
+) -> tuple[str, Optional[str]]:
+    """
+    Split the content of the response into main content and thinking content.
+    """
+    raw = response.message.content
+    content = None
+    thinking_content = None
+    if '<think>' in raw and '</think>' in raw:
+        # Extract thinking content if available
+        thinking_content, content = raw.split("<think>\n")[-1].split("\n</think>\n\n")
+    else:
+        thinking_content = None
+        content = raw
+    return content, thinking_content
+
+
+async def split_content_form_ollama(
+    response: ChatResponse,
+) -> tuple[str, Optional[str]]:
+    loop = asyncio.get_event_loop()
+    with ThreadPoolExecutor() as pool:
+        content, thinking_content = await loop.run_in_executor(
+            pool,
+            __split_content,
+            response,
+        )
+    return content, thinking_content
 
 
 async def get_chat_session_by_user(
