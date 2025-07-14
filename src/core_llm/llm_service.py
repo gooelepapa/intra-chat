@@ -6,10 +6,11 @@ from ..auth.schemas import TokenData
 from ..auth.service import get_user_by_id
 from ..config import configuration
 from .logger import model_logger
-from .schemas import RequestChatMessage
+from .schemas import ChatSessionDetail, ChatSessionList, RequestChatMessage
 from .utils import (
     create_chat_session,
-    get_chat_session_by_session_id,
+    query_chat_session_by_session_id,
+    query_chat_sessions,
     split_content_form_ollama,
     update_chat_session,
 )
@@ -73,7 +74,7 @@ async def ask_llm(
         )
     else:
         # Get the chat memory for the user
-        chat_session = await get_chat_session_by_session_id(
+        chat_session = await query_chat_session_by_session_id(
             session=session,
             user_id=user_id,
             chat_session_id=chat_session_id,
@@ -110,3 +111,42 @@ async def ask_llm(
     content, thinking_content = await split_content_form_ollama(llm_response)
 
     return content, thinking_content, chat_session.session_id
+
+
+async def get_chat_session_list(
+    session: AsyncSession,
+    current_user: TokenData,
+) -> list:
+    chat_sessions = await query_chat_sessions(
+        session=session,
+        user_id=current_user.id,
+    )
+    return [
+        ChatSessionList(
+            session_id=chat_session.session_id,
+            created_at=chat_session.created_at.isoformat(),
+        )
+        for chat_session in chat_sessions
+    ]
+
+
+async def get_chat_session_detail(
+    session: AsyncSession,
+    current_user: TokenData,
+    chat_session_id: str,
+) -> ChatSessionDetail:
+    chat_session = await query_chat_session_by_session_id(
+        session=session,
+        user_id=current_user.id,
+        chat_session_id=chat_session_id,
+    )
+    if not chat_session:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Chat session with ID {chat_session_id} not found for User: {current_user.name}.",
+        )
+    return ChatSessionDetail(
+        session_id=chat_session.session_id,
+        created_at=chat_session.created_at.isoformat(),
+        messages=chat_session.messages,
+    )

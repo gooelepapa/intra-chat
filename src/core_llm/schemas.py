@@ -3,6 +3,45 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+class ChatSessionList(BaseModel):
+    session_id: str
+    created_at: str
+
+    model_config = {
+        "json_schema_extra": {
+            "example": [
+                {
+                    "session_id": "35409181-4de1-4867-beda-adadd9eb3835",
+                    "created_at": "2023-10-01T12:00:00Z",
+                },
+                {
+                    "session_id": "12345678-4de1-4867-beda-adadd9eb3835",
+                    "created_at": "2023-10-02T12:00:00Z",
+                },
+            ]
+        },
+    }
+
+
+class ChatSessionDetail(BaseModel):
+    session_id: str
+    created_at: str
+    messages: list[dict]
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "session_id": "35409181-4de1-4867-beda-adadd9eb3835",
+                "created_at": "2023-10-01T12:00:00Z",
+                "messages": [
+                    {"role": "user", "content": "Hello, how are you?"},
+                    {"role": "assistant", "content": "I'm doing well, thank you!"},
+                ],
+            }
+        },
+    }
+
+
 class RequestChatMessage(BaseModel):
     chat_session_id: Optional[str] = None
     content: str
