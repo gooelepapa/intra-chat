@@ -3,6 +3,7 @@ from typing import List
 
 from ..config import configuration
 from ..core_llm.llm_service import client
+from .logger import rag_logger
 
 
 class Embedder:
@@ -42,9 +43,9 @@ class Embedder:
         models = await self.client.list()
         model_names = [m["model"] for m in models["models"]]
         if self.model not in model_names:
-            print(f"Pulling {self.model} model...")
+            rag_logger.info(f"Pulling {self.model} model...")
             await self.client.pull(self.model)
-            print(f"{self.model} model pulled successfully.")
+            rag_logger.info(f"{self.model} model pulled successfully.")
 
     async def __embed_single(self, text: str) -> List[float]:
         """

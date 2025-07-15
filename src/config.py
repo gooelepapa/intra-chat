@@ -17,6 +17,10 @@ class Configuration(BaseSettings):
     LLM_MODEL: str
     MEMORY_SIZE: int = 100  # Default memory size for chat sessions
     EMBED_MODEL: str = "qwen2:1.5b"  # Default embedding model
+    # Qdrant arguments
+    QDRANT_URL: str = "http://localhost:6333"
+    QDRANT_API_KEY: str = None  # Optional API key for Qdrant
+    QDRANT_COLLECTION: str = "rag_collection"
 
     model_config = SettingsConfigDict(env_file=".env")
 

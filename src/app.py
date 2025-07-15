@@ -7,6 +7,7 @@ from .core_llm import router as llm_router
 from .core_llm.llm_service import pull_model, warmup_model
 from .db.models import Base
 from .db.session import engine
+from .rag.qdrant_setup import ensure_collection, qdrant_status_check
 
 
 @asynccontextmanager
@@ -18,6 +19,8 @@ async def lifespan(app: FastAPI):
     # Pull the models when the application starts
     await pull_model()
     await warmup_model()
+    await ensure_collection()
+    await qdrant_status_check()
     async with engine.begin() as conn:
         # Ensure the database is created
         await conn.run_sync(Base.metadata.create_all)
