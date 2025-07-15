@@ -17,7 +17,7 @@ from .utils import (
 
 client = AsyncClient()
 
-MODEL = configuration.MODEL  # Default model name from configuration
+MODEL = configuration.LLM_MODEL  # Default model name from configuration
 # MODEL = "gemma3:4b"  # Uncomment to use Gemma 3 model
 # MODEL = "qwen3:8b"  # Default model name
 
@@ -27,7 +27,8 @@ async def pull_model() -> None:
     Pull the MODEL from Ollama.
     """
     models = await client.list()
-    if MODEL not in models:
+    model_names = [m["model"] for m in models["models"]]
+    if MODEL not in model_names:
         model_logger.info(f"Pulling {MODEL} model...")
         await client.pull(MODEL)
         model_logger.info(f"{MODEL} model pulled successfully.")

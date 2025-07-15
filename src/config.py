@@ -14,8 +14,9 @@ class Configuration(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     # Ollama arguments
-    MODEL: str
+    LLM_MODEL: str
     MEMORY_SIZE: int = 100  # Default memory size for chat sessions
+    EMBED_MODEL: str = "qwen2:1.5b"  # Default embedding model
 
     model_config = SettingsConfigDict(env_file=".env")
 
