@@ -13,7 +13,7 @@ from qdrant_client.models import PointStruct
 from ..config import configuration
 from .embedder import Embedder
 from .logger import rag_logger
-from .qdrant import qdrant_client
+from .qdrant import get_qdrant_client
 
 
 @dataclass
@@ -122,7 +122,7 @@ async def ingest_file(
         )
         for chunk, embedding in zip(chunks, embeddings)
     ]
-    await qdrant_client.upsert(
+    await get_qdrant_client().upsert(
         collection_name=configuration.QDRANT_COLLECTION,
         points=points,
     )

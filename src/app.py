@@ -7,7 +7,7 @@ from .core_llm import router as llm_router
 from .core_llm.llm_service import pull_model, warmup_model
 from .db.models import Base
 from .db.session import engine
-from .rag.qdrant import ensure_collection, qdrant_client, qdrant_status_check
+from .rag.qdrant import ensure_collection, get_qdrant_client, qdrant_status_check
 
 
 @asynccontextmanager
@@ -26,7 +26,9 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     yield
     # Cleanup can be done here if needed
-    await qdrant_client.close()
+    qdrant = get_qdrant_client()
+    if qdrant:
+        await qdrant.close()
     await engine.dispose()
 
 
