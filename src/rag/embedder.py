@@ -2,7 +2,7 @@ import asyncio
 from typing import List
 
 from ..config import configuration
-from ..core_llm.llm_service import client
+from ..llm_client import get_client
 from .logger import rag_logger
 
 
@@ -14,7 +14,7 @@ class Embedder:
 
     def __init__(self):
         self.model = configuration.EMBED_MODEL
-        self.client = client
+        self.client = get_client()
         self.embedding_len = None
 
     @classmethod
