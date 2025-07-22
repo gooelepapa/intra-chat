@@ -6,6 +6,12 @@ dist/
 wheels/
 *.egg-info
 
+# crawler files
+data/
+
+# local test files
+local_scrips/
+
 # Virtual environments
 .venv
 

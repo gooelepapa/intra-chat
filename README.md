@@ -21,3 +21,8 @@ sudo docker compose up -d
 4. 完成基本的chatbot （有記憶功能且區分使用者）
 5. 加入RAG機制，來擴展llm
 6. 加入爬蟲，來自動更新RAG資料庫
+
+# playwrighy
+```bash
+playwright install chromium
+```
