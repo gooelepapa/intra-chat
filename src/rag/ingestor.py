@@ -132,14 +132,18 @@ async def ingest_file(
 async def ingest_folder(folder_path: str):
     embedders = await Embedder.create()
     total = 0
-    files = os.listdir(folder_path)
+    files = []
+    for root, _, filenames in os.walk(folder_path):
+        for filename in filenames:
+            if filename.endswith('.txt') or filename.endswith('.csv'):
+                files.append(os.path.join(root, filename))
     rag_logger.info(f"Found {len(files)} files in folder {folder_path} for ingestion.")
     for file in files:
-        file_path = os.path.join(folder_path, file)
-        if os.path.isfile(file_path) and (file_path.endswith('.txt') or file_path.endswith('.csv')):
-            await ingest_file(file_path, embedder=embedders)
+        if os.path.isfile(file) and (file.endswith('.txt') or file.endswith('.csv')):
+            await ingest_file(file, embedder=embedders)
+            total += 1
         else:
-            rag_logger.warning(f"Skipping non-file: {file_path}")
+            rag_logger.warning(f"Skipping non-file: {file}")
     rag_logger.info(f"Total {total} points ingested from folder.")
 
 
