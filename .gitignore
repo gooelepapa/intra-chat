@@ -9,6 +9,9 @@ wheels/
 # crawler files
 data/
 
+# ingested data
+ingested_articles/
+
 # local test files
 local_scrips/
 
