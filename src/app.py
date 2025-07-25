@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from .auth import router as auth_router
 from .core_llm import router as llm_router
 from .core_llm.llm_service import pull_model, warmup_model
+from .crawler import router as crawler_router
 from .db.models import Base
 from .db.session import engine
 from .rag.qdrant import ensure_collection, get_qdrant_client, qdrant_status_check
@@ -39,6 +40,7 @@ app = FastAPI(
 )
 app.include_router(llm_router)
 app.include_router(auth_router)
+app.include_router(crawler_router)
 
 
 @app.get("/")
