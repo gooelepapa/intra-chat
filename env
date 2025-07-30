@@ -1,0 +1,11 @@
+DATABASE_URL = "postgresql+asyncpg://chatuser:chatpass@localhost:5432/intra_chat"
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+LLM_MODEL = "gemma3:4b"
+MEMORY_SIZE = 100
+EMBED_MODEL = "qwen2:1.5b"
+QDRANT_URL = "http://localhost:6333"
+QDRANT_API_KEY = None  # Optional API key for Qdrant
+QDRANT_COLLECTION = "rag_collection"
+CRAWLER_DATA_ROOT = "data/articles"
